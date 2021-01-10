@@ -1,0 +1,61 @@
+---
+# tasks file for Doorman
+
+- name: Get Cluster information
+  community.kubernetes.k8s_cluster_info:
+  register: api_status
+
+- name: set minor k8s version
+  set_fact:
+    k8s_minor: "{{ api_status.version.server.kubernetes.minor | int }}"
+
+- name: create redis
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'redis.yml.j2') }}"
+    wait: yes
+
+- name: create smtp secrets for transports
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'smtp-secret.yml.j2') }}"
+  when: item.type == 'email' and item.spec is defined
+  loop: "{{ transports }}"
+
+- name: create ldap secrets for users
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'ldap-secret.yml.j2') }}"
+  when: item.type == 'ldap' and item.spec is defined
+  loop: "{{ users }}"
+
+- name: generate config template
+  set_fact:
+    config_data: "{{ lookup('template', 'configs.yml.j2') }}"
+
+- name: create doorman config
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ config_data }}"
+
+- name: create doorman service
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'service.yml.j2') }}"
+
+- name: create doorman ingress
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'ingress.yml.j2') }}"
+  when: k8s_minor|int > 18
+
+- name: create doorman ingress (old)
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'ingress-old.yml.j2') }}"
+  when: k8s_minor|int < 19
+
+- name: create doorman deployment
+  community.kubernetes.k8s:
+    state: present
+    definition: "{{ lookup('template', 'deployment.yml.j2') }}"

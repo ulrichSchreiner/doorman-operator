@@ -1,0 +1,27 @@
+---
+apiVersion: networking.k8s.io/v1beta1
+kind: Ingress
+metadata:
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}'
+  annotations:
+    kubernetes.io/ingress.class: {{ ingress_class }}
+    nginx.ingress.kubernetes.io/proxy-body-size: "0"
+    nginx.ingress.kubernetes.io/proxy-buffering: "off"
+    nginx.ingress.kubernetes.io/proxy-connect-timeout: "15"
+    nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
+    nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+spec:
+  ingressClassName: {{ ingress_class }}
+  rules:
+{% for h in services %}
+  - host: {{ h.host }}
+    http:
+      paths:
+      - path: /
+        pathType: "Prefix"
+        backend:
+          # use the old type for older k8s versions
+          serviceName: '{{ ansible_operator_meta.name }}'
+          servicePort: 8000
+{% endfor %}

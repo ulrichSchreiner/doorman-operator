@@ -1,0 +1,24 @@
+---
+# defaults file for Doorman
+
+applabel: doorman
+appimage: quay.io/ulrichschreiner/doorman
+ingress_class: nginx
+
+log_level: info
+app_version_tag: latest
+port: 2015
+replicas: 2
+messenger_burst: 20
+messenger_rate: 3s
+imprint_url: ""
+privacy_policy_url: ""
+spacing: ""
+operation_mode: token
+issuer: Doorman
+issuer_host: auth.example.com
+token_duration: 60s
+access_duration: 10h
+cookie_block: S+lyDRL0/sFKNmTtiD2/T4W8J5x3ur2zQY6jK4J08PM=
+cookie_hash: tga7Y9FC/4R8lm6abiPZCbqOYS4Pz4H4ql6AoIx6yMMmLSZhrS4ZihiLKlTl5Bcjx8fBkuWE4FDkvdISeVEjNQ==
+insecure_cookie: false

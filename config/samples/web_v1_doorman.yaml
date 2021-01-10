@@ -1,0 +1,98 @@
+apiVersion: web.controldeck.io/v1
+kind: Doorman
+metadata:
+  name: doorman-sample
+spec:
+  log_level: debug
+  issuer: Doorman
+  issuer_host: auth.example.com
+  issuer_email: doorman@example.com
+  token_duration: 60s
+  access_duration: 60s
+  cookie_block: S+lyDRL0/sFKNmTtiD2/T4W8J5x3ur2zQY6jK4J08PM=
+  cookie_hash: tga7Y9FC/4R8lm6abiPZCbqOYS4Pz4H4ql6AoIx6yMMmLSZhrS4ZihiLKlTl5Bcjx8fBkuWE4FDkvdISeVEjNQ==
+  insecure_cookie: true
+  transports:
+    -
+      type: email
+      name: my-standard-smtp
+      spec_from_secret: my-standard-smtp
+    -
+      type: command
+      name: clipboard
+      spec:
+        command: /usr/bin/xsel
+        use_stdin: true
+        args: ["-i","-b"]
+    -
+      type: url
+      name: smsgateway
+      spec:
+        url_template: "{env.SMS_GATEWAY_URL1}&body=\\{\\{.message}}&from=Doorman&to=\\{\\{.tomobile}}"
+        method: GET
+        insecure: false
+  channels:
+    - my-standard-smtp
+    - standard-smtp
+    - clipboard
+  otp_timeout: 5m
+  otp_transport:
+    type: email
+    name: my-standard-smtp
+    spec_from_secret: my-standard-smtp
+  whitelist:
+    -
+      type: list
+      name: static list
+      spec:
+        - "127.0.0.2"
+        - "::2"
+        - "192.168.49.0/24"
+  users:
+    -
+      type: list
+      name: static users
+      spec:
+        -
+          name: Max Muster
+          uid: mmu
+          mobile: 004912345123
+          email: max.muster@example.com
+    -
+      type: ldap
+      name: test-ldap-backend
+      spec:
+        address: localhost:6389
+        search_base: dc=example,dc=org
+        user: cn=admin,dc=example,dc=org
+        password: test1234
+        tls: false
+        insecure_skip: true
+  services:
+    -
+      host: www.example.com
+      backend:
+        upstreams:
+          - www.example.com:443
+        add_host_header: true
+        use_tls: true
+        insecure_skip: true
+      health_check:
+        path: "/"
+        interval: 60s
+        timeout: 5s
+        expect_status: 200
+        expect_body: "example"
+    -
+      host: www.innuendo.de
+      backend:
+        upstreams:
+          - www.innuendo.de:443
+        add_host_header: true
+        use_tls: true
+      health_check:
+        path: "/welcome/"
+        interval: 30s
+        timeout: 5s
+        expect_status: 200
+        expect_body: "Willkommen"

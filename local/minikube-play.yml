@@ -1,0 +1,19 @@
+---
+- name: Deploy doorman
+  hosts: localhost
+  connection: local
+  gather_facts: no
+  pre_tasks:
+    - name: read sample
+      include_vars:
+        file: ../config/samples/web_v1_doorman.yaml
+        name: sample_spec
+    - name: set spec fields as toplevel values
+      set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+      loop: "{{ sample_spec.spec | dict2items }}"
+    - name: set ansible_operator_meta
+      set_fact:
+        ansible_operator_meta: "{{ dict(name=sample_spec.metadata.name,namespace='default') }}"
+  roles:
+    - role: doorman

@@ -1,0 +1,8 @@
+domain: controldeck.io
+layout: ansible.sdk.operatorframework.io/v1
+projectName: doorman-operator
+resources:
+- group: web
+  kind: Doorman
+  version: v1
+version: 3-alpha

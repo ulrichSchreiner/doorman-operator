@@ -1,0 +1,166 @@
+{% macro gentransport(t) -%}
+{% if t.type == 'email' %}
+    {"type":"email","name":"{{t.name}}","spec":{"host":"{env.{{t.name|upper}}_SERVER}","user":"{env.{{t.name|upper}}_USER}","password":"{env.{{t.name|upper}}_PASSWORD}"} }
+{% else %}
+    {{t | to_json}}
+{% endif %}
+{%- endmacro -%}
+
+{% macro genuser(t) -%}
+{% if t.type == 'ldap' %}
+    {"type":"ldap","name":"{{t.name}}","spec":{"address":"{env.{{t.name|upper}}_ADDRESS}","user":"{env.{{t.name|upper}}_USER}","password":"{env.{{t.name|upper}}_PASSWORD}", "search_base":"{{t.spec.search_base}}", "insecure_skip":{{t.spec.insecure_skip |to_json}}, "tls":{{t.spec.tls | to_json}} } }
+{% else %}
+    {{t | to_json}}
+{% endif %}
+{%- endmacro -%}
+
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}-config'
+data:
+  caddy.json: |
+   {
+       "logging": {
+           "logs": {
+               "default": {
+                  "level": "{{ log_level }}"
+               }
+           }
+       },
+       "admin": {
+           "disabled": true
+       },
+       "apps": {
+           "doorman": {
+                "imprint_url": "{{ imprint_url }}",
+                "privacy_policy_url": "{{ privacy_policy_url }}",
+                "spacing": "{{ spacing }}",
+                "operation_mode": "{{ operation_mode }}",
+                "issuer": "{{ issuer }}",
+                "issuer_base": "https://{{ issuer_host }}",
+                "token_duration": "{{ token_duration }}",
+                "access_duration": "{{ access_duration }}",
+                "cookie_block": "{{ cookie_block }}",
+                "cookie_hash": "{{ cookie_hash }}",
+                "insecure_cookie": {{ insecure_cookie | to_json }},
+                    "messenger_config": {
+                    "burst": {{ messenger_burst }},
+                    "rate": "{{ messenger_rate }}",
+                    "from": {
+                        "name": "{{ issuer }}",
+                        "email": "{{ issuer_email }}"
+                    },
+                    "transports": [
+{% for t in transports %}
+  {{ gentransport(t) }}
+{% if not loop.last %}
+    ,
+{% endif %}
+{% endfor %}
+                    ]
+                },
+                "store_settings": {
+                    "persistent_type": "redis",
+                    "memory_cache_mb": 300,
+                    "redis": {
+                        "address": "{{ ansible_operator_meta.name }}-redis-master:6379"
+                    },
+                    "otp": {
+                        "timeout": "{{ otp_timeout }}",
+                        "transport":  {{ gentransport(otp_transport) }}
+                    }
+                },
+                "channels": {{ channels | to_json}},
+                "whitelist": {{ whitelist | to_json }},
+                "users" : [
+{% for u in users %}
+    {{ genuser(u) }}
+{% if not loop.last %}
+    ,
+{% endif %}
+{% endfor %}
+                ]
+           },
+           "http": {
+               "servers": {
+                   "default": {
+                       "listen": [
+                           ":{{ port }}"
+                       ],
+                       "automatic_https": {
+                           "disable":true
+                       },
+                       "routes": [
+{% for s in services %}
+    {
+        "match": [{
+            "host":["{{s.host}}"]
+        }],
+        "handle": [
+            {
+                "handler":"doorman"
+            },
+            {
+                "handler": "reverse_proxy",
+                "transport": {
+                    "protocol": "http"
+{% if s.backend.use_tls %}
+                    ,"tls": {
+                        "server_name": "{{s.host}}",
+                        "insecure_skip_verify":{{s.backend.insecure_skip|default(false) | to_json }}
+                    }
+{% endif %}
+                },
+                "upstreams": [
+{% for d in s.backend.upstreams %}
+                    {
+                        "dial": "{{d}}"
+                    }
+{% if not loop.last %}
+    ,
+{% endif %}
+{% endfor %}
+                ],
+{% if s.backend.add_host_header %}
+                "headers": {
+                    "request": {
+                        "add": {
+                            "Host": [
+                                "{{s.host}}"
+                            ]
+                        }
+                    }
+                },
+{% endif %}
+                "health_checks": {
+                    "active": {
+                        "path": "{{s.health_check.path}}",
+                        "expect_status": {{s.health_check.expect_status}},
+                        "expect_body": "{{s.health_check.expect_body}}",
+                        "interval":"{{s.health_check.interval}}",
+                        "timeout":"{{s.health_check.timeout}}"
+                    }
+                },
+                "load_balancing": {
+                    "selection_policy": {
+                        "policy":"cookie",
+                        "name":"backid"
+                    }
+                }
+            }
+        ]
+    }
+{% if not loop.last %}
+    ,
+{% endif %}
+{% endfor %}
+
+                       ]
+                   }
+               }
+           }
+       }
+   }

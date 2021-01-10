@@ -1,0 +1,85 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: '{{ ansible_operator_meta.name }}'
+  labels:
+    app: '{{ applabel }}'
+spec:
+  replicas: {{ replicas }}
+  selector:
+    matchLabels:
+      app: '{{ applabel }}'
+  template:
+    metadata:
+      annotations:
+        configHash: '{{ config_data | to_json | checksum }}'
+      labels:
+        app: '{{ applabel }}'
+    spec:
+      containers:
+      - name: doorman
+        imagePullPolicy: IfNotPresent
+        image: '{{ appimage }}:{{ app_version_tag }}'
+        securityContext:
+          runAsUser: 1234
+        command:
+          - /doorman
+          - run
+          - --config
+          - /etc/caddy/caddy.json
+        ports:
+        - containerPort: {{ port }}
+        env:
+{% for t in transports %}
+{% if t.type == 'email' %}
+          - name: {{t.name|upper}}_SERVER
+            valueFrom:
+              secretKeyRef:
+                name: '{{ t.name }}'
+                key: host
+          - name: {{t.name|upper}}_USER
+            valueFrom:
+              secretKeyRef:
+                name: '{{ t.name }}'
+                key: user
+          - name: {{t.name|upper}}_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: '{{ t.name }}'
+                key: password
+{% endif %}
+{% endfor %}
+{% for u in users %}
+{% if u.type == 'ldap' %}
+          - name: {{u.name|upper}}_ADDRESS
+            valueFrom:
+              secretKeyRef:
+                name: '{{ u.name }}'
+                key: address
+          - name: {{u.name|upper}}_USER
+            valueFrom:
+              secretKeyRef:
+                name: '{{ u.name }}'
+                key: user
+          - name: {{u.name|upper}}_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: '{{ u.name }}'
+                key: password
+{% endif %}
+{% endfor %}
+        volumeMounts:
+        - name: config
+          mountPath: "/etc/caddy"
+          readOnly: true
+        - mountPath: /work
+          name: work-volume
+      volumes:
+      - name: config
+        configMap:
+          name: '{{ ansible_operator_meta.name }}-config'
+      - name: work-volume
+        emptyDir:
+          medium: Memory

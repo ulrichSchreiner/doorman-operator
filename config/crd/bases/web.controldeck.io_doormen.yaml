@@ -1,0 +1,130 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: doormen.web.controldeck.io
+spec:
+  group: web.controldeck.io
+  names:
+    kind: Doorman
+    listKind: DoormanList
+    plural: doormen
+    singular: doorman
+  scope: Namespaced
+  versions:
+  - name: v1
+    schema:
+      openAPIV3Schema:
+        description: Doorman is the Schema for the doormen API
+        properties:
+          apiVersion:
+            description: 'APIVersion defines the versioned schema of this representation
+              of an object. Servers should convert recognized schemas to the latest
+              internal value, and may reject unrecognized values. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#resources'
+            type: string
+          kind:
+            description: 'Kind is a string value representing the REST resource this
+              object represents. Servers may infer this from the endpoint the client
+              submits requests to. Cannot be updated. In CamelCase. More info: https://git.k8s.io/community/contributors/devel/sig-architecture/api-conventions.md#types-kinds'
+            type: string
+          metadata:
+            type: object
+          spec:
+            description: Spec defines the desired state of Doorman
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+            properties:
+              replicas:
+                type: integer
+                default: 2
+                description: the number of replicas to start
+              port:
+                type: integer
+                default: 2015
+                description: the listen port for the service
+              log_level:
+                type: string
+                default: info
+                description: the log level to use
+              app_version_tag:
+                type: string
+                default: latest
+                description: the container image tag to use
+              ingress_class:
+                type: string
+                default: nginx
+                description: 'the ingress class which are used for the needed
+                  ingress ressources'
+              imprint_url:
+                type: string
+                description: 'if set, this will be rendered as an impprint link
+                  in the login page'
+              privacy_policy_url:
+                type: string
+                description: 'if set, this will be rendered as a privacy policy
+                  url'
+              spacing:
+                type: string
+                description: a one character string which will be used as a
+                  delimiter if token mode is used
+              operation_mode:
+                type: string
+                default: token
+                description: the mode of operation
+                enum:
+                  - token
+                  - otp
+                  - link
+              issuer:
+                type: string
+                description: the name of the issuer of the tokens
+              issuer_email:
+                type: string
+                description: the email of the issuer of the tokens
+              issuer_host:
+                type: string
+                description: a host without scheme which must exist as a DNS
+                  entry and terminate at the installation of this doorman
+              token_duration:
+                type: string
+                default: 60s
+                description: the time how long a token is valid as a golang
+                  duration string
+              access_duration:
+                type: string
+                default: 10h
+                description: the time how long a access is possible as a golang
+                  duration string
+              messenger_rate:
+                type: string
+                default: 3s
+                description: the rate for the messenger, a go duration string
+              messenger_burst:
+                type: integer
+                default: 20
+                description: the burst reate for the messenger
+              cookie_block:
+                type: string
+                description: 32bytes, base64 encoded, required for cookie security
+              cookie_hash:
+                type: string
+                description: 64bytes, base64 encoded, required for cookie security
+              insecure_cookie:
+                type: boolean
+                default: false
+                description: allow insecure cookies; use only in development mode
+            required:
+              - issuer
+              - issuer_email
+              - issuer_host
+              - cookie_block
+              - cookie_hash
+          status:
+            description: Status defines the observed state of Doorman
+            type: object
+            x-kubernetes-preserve-unknown-fields: true
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
