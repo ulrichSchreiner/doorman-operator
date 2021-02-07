@@ -32,5 +32,3 @@ RUN pip3 install ansible-runner && \
 ENV CDPATH=/work
 
 CMD ["bash"]
-
-https://github.com/operator-framework/operator-sdk/releases/download/v1.4.0/ansible-operator_linux_amd64
