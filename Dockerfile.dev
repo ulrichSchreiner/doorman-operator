@@ -1,0 +1,30 @@
+FROM metalstack/metal-deployment-base:latest
+
+RUN apt update && apt -y install \
+    bash-completion \
+    git \
+    jq \
+    kubectl \
+    kubetail \
+    less \
+    vim \
+    watch \
+    wget
+
+
+RUN mkdir -p ~/repos/ && \
+    git clone https://github.com/jonmosco/kube-ps1.git $HOME/repos/kube-ps1  && \
+    git clone https://github.com/heptiolabs/ktx $HOME/repos/ktx && \
+    # install k9s
+    curl -sL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r ".assets[] | select(.name | contains(\"Linux_x86_64\")) | .browser_download_url" | wget -i - -O - | tar  -C /usr/local/bin -xz && \
+    echo "source /etc/bash_completion" >>~/.bashrc && \
+    echo "source $HOME/repos/kube-ps1/kube-ps1.sh" >>~/.bashrc && \
+    echo "source $HOME/repos/ktx/ktx" >>~/.bashrc && \
+    echo "source $HOME/repos/ktx/ktx-completion.sh" >>~/.bashrc && \
+    echo "PS1='[\u@\h \W \$(kube_ps1)] # '" >>~/.bashrc && \
+    echo "alias k=kubectl" >>~/.bashrc && \
+    echo "alias watch='watch '" >>~/.bashrc
+
+ENV CDPATH=/work
+
+CMD ["bash"]

@@ -99,15 +99,21 @@ delete-controller:
 	kubectl delete pod -n doorman-operator-system -l control-plane=controller-manager
 
 .PHONY:
+deployment-builder:
+	docker build -t quay.io/ulrichschreiner/ansible-shell -f Dockerfile.dev .
+
+# https://github.com/metal-stack/metal-dockerfiles
+.PHONY:
 deployment-shell:
 	@docker run -it --rm \
 		-v $(HOME):$(HOME):ro \
 		-v $(PWD):/work \
+		-v $(HOME)/.kube:/root/.kube:ro \
 		-v $(KUBECONFIG):/kubeconfig \
 		-w /work \
 		-e KUBECONFIG=/kubeconfig \
 		--network minikube \
-		metalstack/metal-deployment-base:v0.2.0 bash
+		quay.io/ulrichschreiner/ansible-shell
 
 .PHONY:
 prepare-minikube-deployment:
