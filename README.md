@@ -9,6 +9,8 @@ Start local usage with
 $ make deployment-shell
 $ make prepare-minikube-deployment
 $ make minikube-deployment
+# OR to run your operator (make sure to have your CRDs registered)
+$ make run
 ```
 
 **Please not that the Makefile will use your current KUBECONFIG, so make sure
