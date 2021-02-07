@@ -2,21 +2,25 @@ FROM metalstack/metal-deployment-base:latest
 
 RUN apt update && apt -y install \
     bash-completion \
+    build-essential \
     git \
     jq \
     kubectl \
     kubetail \
     less \
+    python3-dev \
     vim \
     watch \
     wget
 
 
-RUN mkdir -p ~/repos/ && \
+RUN pip3 install ansible-runner && \
+    mkdir -p ~/repos/ && \
     git clone https://github.com/jonmosco/kube-ps1.git $HOME/repos/kube-ps1  && \
     git clone https://github.com/heptiolabs/ktx $HOME/repos/ktx && \
     # install k9s
     curl -sL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r ".assets[] | select(.name | contains(\"Linux_x86_64\")) | .browser_download_url" | wget -i - -O - | tar  -C /usr/local/bin -xz && \
+    curl -sL https://api.github.com/repos/operator-framework/operator-sdk/releases/latest | jq -r ".assets[] | select(.name | contains(\"ansible-operator_linux_amd64\")) | .browser_download_url" | wget -i - -O /usr/local/bin/ansible-operator && chmod +x /usr/local/bin/ansible-operator && \
     echo "source /etc/bash_completion" >>~/.bashrc && \
     echo "source $HOME/repos/kube-ps1/kube-ps1.sh" >>~/.bashrc && \
     echo "source $HOME/repos/ktx/ktx" >>~/.bashrc && \
@@ -28,3 +32,5 @@ RUN mkdir -p ~/repos/ && \
 ENV CDPATH=/work
 
 CMD ["bash"]
+
+https://github.com/operator-framework/operator-sdk/releases/download/v1.4.0/ansible-operator_linux_amd64
