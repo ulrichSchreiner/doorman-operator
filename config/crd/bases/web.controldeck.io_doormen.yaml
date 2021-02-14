@@ -10,6 +10,9 @@ spec:
     listKind: DoormanList
     plural: doormen
     singular: doorman
+    shortNames:
+      - drm
+      - drms
   scope: Namespaced
   versions:
   - name: v1

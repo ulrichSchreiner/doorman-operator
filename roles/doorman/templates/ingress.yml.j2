@@ -25,3 +25,11 @@ spec:
             port:
               number: 8000
 {% endfor %}
+  tls:
+{% for h in services %}
+{% if h.tls_secret is defined %}
+  - hosts:
+    - {{ h.host }}
+    secretName: {{ h.tls_secret }}
+{% endif %}
+{% endfor %}
