@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
       - name: doorman
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: {{ pull_policy }}
         image: '{{ appimage }}:{{ app_version_tag }}'
         securityContext:
           runAsUser: 1234
