@@ -31,5 +31,5 @@ spec:
             - name: ANSIBLE_GATHERING
               value: explicit
           image: controller:latest
-          imagePullPolicy: IfNotPresent
+          imagePullPolicy: Always
       terminationGracePeriodSeconds: 10

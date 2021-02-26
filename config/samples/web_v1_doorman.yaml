@@ -6,6 +6,7 @@ spec:
   log_level: debug
   issuer: Doorman
   issuer_host: auth.example.com
+  issuer_secret: auth.example.com-tls
   issuer_email: doorman@example.com
   token_duration: 60s
   access_duration: 60s

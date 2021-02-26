@@ -13,6 +13,16 @@ metadata:
 spec:
   ingressClassName: {{ ingress_class }}
   rules:
+  - host: {{ issuer_host }}
+    http:
+      paths:
+      - path: /
+        pathType: "Prefix"
+        backend:
+          service:
+            name : '{{ ansible_operator_meta.name }}'
+            port:
+              number: 8000
 {% for h in services %}
   - host: {{ h.host }}
     http:
@@ -26,6 +36,11 @@ spec:
               number: 8000
 {% endfor %}
   tls:
+{% if issuer_secret is defined %}
+  - hosts:
+    - {{ issuer_host }}
+    secretName: {{ issuer_secret }}
+{% endif %}
 {% for h in services %}
 {% if h.tls_secret is defined %}
   - hosts:
