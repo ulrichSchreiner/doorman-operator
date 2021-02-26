@@ -9,7 +9,7 @@ steps:
   commands:
     - echo "latest,g$(git rev-parse --short=8 HEAD)" >.tags
 
-- name: publish
+- name: publish dev
   image: plugins/docker
   settings:
     dockerfile: Dockerfile.dev
