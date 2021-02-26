@@ -26,7 +26,16 @@
             "expect_body": "{{s.health_check.expect_body}}",
 {% endif %}
             "interval":"{{s.health_check.interval}}",
-            "timeout":"{{s.health_check.timeout}}"
+            "timeout":"{{s.health_check.timeout}}",
+            "headers": {
+                "Host": [
+{% if s.backend.host_header|length %}
+                    "{{s.backend.host_header}}"
+{% else %}
+                    "{{s.host}}"
+{% endif %}
+                ]
+            }
         }
     }
 {% endif %}
