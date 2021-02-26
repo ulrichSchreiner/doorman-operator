@@ -9,22 +9,22 @@ steps:
   commands:
     - echo "latest,g$(git rev-parse --short=8 HEAD)" >.tags
 
-- name: publish dev
+- name: publish
   image: plugins/docker
   settings:
-    dockerfile: Dockerfile.dev
-    repo: quay.io/ulrichschreiner/ansible-shell
+    dockerfile: Dockerfile
+    repo: quay.io/ulrichschreiner/doorman-controller
     registry: quay.io
     username:
       from_secret: quay_username
     password:
       from_secret: quay_password
 
-- name: publish
+- name: publish dev
   image: plugins/docker
   settings:
-    dockerfile: Dockerfile
-    repo: quay.io/ulrichschreiner/doorman-controller
+    dockerfile: Dockerfile.dev
+    repo: quay.io/ulrichschreiner/ansible-shell
     registry: quay.io
     username:
       from_secret: quay_username
