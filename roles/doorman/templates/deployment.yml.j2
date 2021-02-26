@@ -49,6 +49,11 @@ spec:
               secretKeyRef:
                 name: '{{ t.name }}'
                 key: password
+          - name: {{t.name|upper}}_TLS_SKIP
+            valueFrom:
+              secretKeyRef:
+                name: '{{ t.name }}'
+                key: tls_skip
 {% endif %}
 {% endfor %}
 {% for u in users %}
