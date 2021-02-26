@@ -74,7 +74,7 @@ spec:
       backend:
         upstreams:
           - www.example.com:443
-        add_host_header: true
+        host_header: www.example.com
         use_tls: true
         insecure_skip: true
       health_check:
@@ -88,7 +88,7 @@ spec:
       backend:
         upstreams:
           - www.innuendo.de:443
-        add_host_header: true
+        host_header: www.innuendo.de
         use_tls: true
       health_check:
         path: "/welcome/"

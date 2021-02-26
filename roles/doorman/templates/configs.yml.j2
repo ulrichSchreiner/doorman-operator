@@ -142,17 +142,19 @@ data:
 {% endif %}
 {% endfor %}
                 ],
-{% if s.backend.add_host_header %}
                 "headers": {
                     "request": {
                         "add": {
                             "Host": [
+{% if s.backend.host_header|length %}
+                                "{{s.backend.host_header}}"
+{% else %}
                                 "{{s.host}}"
+{% endif %}
                             ]
                         }
                     }
                 },
-{% endif %}
                 "load_balancing": {
                     "selection_policy": {
                         "policy":"cookie",
