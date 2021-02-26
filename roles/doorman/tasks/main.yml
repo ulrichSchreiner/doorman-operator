@@ -19,14 +19,14 @@
   community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'smtp-secret.yml.j2') }}"
-  when: item.type == 'email' and item.spec is defined
+  when: item.type == 'email' and not item.spec_from_secret is defined
   loop: "{{ transports }}"
 
 - name: create ldap secrets for users
   community.kubernetes.k8s:
     state: present
     definition: "{{ lookup('template', 'ldap-secret.yml.j2') }}"
-  when: item.type == 'ldap' and item.spec is defined
+  when: item.type == 'ldap' and not item.spec_from_secret is defined
   loop: "{{ users }}"
 
 - name: generate config template
