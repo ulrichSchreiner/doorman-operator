@@ -12,7 +12,6 @@ metadata:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "900"
     nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
 spec:
-  ingressClassName: {{ ingress_class }}
   rules:
 {% for h in services %}
   - host: {{ h.host }}
