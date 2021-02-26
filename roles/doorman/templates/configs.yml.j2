@@ -165,10 +165,19 @@ data:
             }
         ]
     }
-{% if not loop.last %}
     ,
-{% endif %}
 {% endfor %}
+   {
+        "match": [{
+            "host":["{{s.issuer_host}}"]
+        }],
+        ,
+        "handle": [
+            {
+                "handler":"doorman"
+            }
+        ]
+   }
 
                        ]
                    }
