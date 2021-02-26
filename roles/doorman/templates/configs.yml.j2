@@ -1,6 +1,6 @@
 {% macro gentransport(t) -%}
 {% if t.type == 'email' %}
-    {"type":"email","name":"{{t.name}}","spec":{"host":"{env.{{t.name|upper}}_SERVER}","user":"{env.{{t.name|upper}}_USER}","password":"{env.{{t.name|upper}}_PASSWORD}","insecure_skip_verify":"{env.{{t.name|upper}}_TLS_SKIP}"} }
+    {"type":"email","name":"{{t.name}}","spec":{"host":"{env.{{t.name|upper}}_SERVER}","user":"{env.{{t.name|upper}}_USER}","password":"{env.{{t.name|upper}}_PASSWORD}","insecure_skip_verify":{{t.spec.insecure_skip|default(false)}}} }
 {% else %}
     {{t | to_json}}
 {% endif %}
