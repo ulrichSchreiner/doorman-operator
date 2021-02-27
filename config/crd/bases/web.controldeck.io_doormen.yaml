@@ -116,12 +116,78 @@ spec:
                 type: boolean
                 default: false
                 description: allow insecure cookies; use only in development mode
+              services:
+                description: a list of backend services
+                type: array
+                items:
+                  type: object
+                  properties:
+                    host:
+                      description: the dns name of the service
+                      type: string
+                    tls_secret:
+                      description: the name of the tls secret which is connected to
+                        this ingress
+                      type: string
+                      default: ""
+                    backend:
+                      description: the backend for the service
+                      type: object
+                      properties:
+                        upstreams:
+                          description: a list of ip:port or host:port entries
+                          type: array
+                          items:
+                            type: string
+                        host_header:
+                          description: the value of the host header if it must be
+                            different than the servicename
+                          type: string
+                          default: ""
+                        use_tls:
+                          description: set to true, if the backend uses TLS
+                          type: boolean
+                          default: false
+                        insecure_skip:
+                          description: set to true, if the certificate of the backend not be checked for validity
+                          type: boolean
+                          default: false
+                      required:
+                        - upstreams
+                    health_check:
+                      description: the healthcheck config for this service
+                      type: object
+                      properties:
+                        path:
+                          type: string
+                          description: the path for the healthcheck
+                          default: "/"
+                        interval:
+                          type: string
+                          description: an interval as a golang-string for a duration
+                          default: "60s"
+                        timeout:
+                          type: string
+                          description: a duration after which this healthcheck is marked failed
+                          default: "5s"
+                        expect_status:
+                          type: integer
+                          description: the expected http status code
+                          default: 200
+                        expect_body:
+                          type: string
+                          description: a string which must be contained in the response
+                          default: ""
+                  required:
+                    - host
+                    - backend
             required:
               - issuer
               - issuer_email
               - issuer_host
               - cookie_block
               - cookie_hash
+              - services
           status:
             description: Status defines the observed state of Doorman
             type: object

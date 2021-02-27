@@ -7,6 +7,7 @@ ingress_class: nginx
 
 log_level: info
 app_version_tag: latest
+pull_policy: IfNotPreset
 port: 2015
 replicas: 2
 messenger_burst: 20
