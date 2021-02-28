@@ -27,13 +27,15 @@
 {% endif %}
             "interval":"{{s.health_check.interval}}",
             "timeout":"{{s.health_check.timeout}}"
-{% if s.backend.host_header|length %}
             ,"headers": {
                 "Host": [
+{% if s.backend.host_header|length %}
                     "{{s.backend.host_header}}"
+{% else %}
+                    "{host}"
+{% endif %}
                 ]
             }
-{% endif %}
         }
     }
 {% endif %}
@@ -149,17 +151,19 @@ data:
 {% endif %}
 {% endfor %}
                 ],
-{% if s.backend.host_header|length %}
                 "headers": {
                     "request": {
                         "add": {
                             "Host": [
+{% if s.backend.host_header|length %}
                                 "{{s.backend.host_header}}"
+{% else %}
+                                "{host}"
+{% endif %}
                             ]
                         }
                     }
                 },
-{% endif %}
                 "load_balancing": {
                     "selection_policy": {
                         "policy":"cookie",
