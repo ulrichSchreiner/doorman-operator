@@ -15,7 +15,6 @@
 {%- endmacro -%}
 
 {% macro healthcheck(s) -%}
-{% if s.health_check is defined %}
     "health_checks": {
         "active": {
             "path": "{{s.health_check.path}}",
@@ -38,7 +37,6 @@
             }
         }
     }
-{% endif %}
 {%- endmacro -%}
 
 ---
@@ -169,8 +167,12 @@ data:
                         "policy":"cookie",
                         "name":"backid"
                     }
-                },
-                {{ healthcheck(s) }}
+                }
+{% if s.health_check is defined %}
+,
+{{ healthcheck(s) }}
+{% endif %}
+
             }
         ]
     }
