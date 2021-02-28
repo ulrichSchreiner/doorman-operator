@@ -32,7 +32,7 @@
 {% if s.backend.host_header|length %}
                     "{{s.backend.host_header}}"
 {% else %}
-                    "{host}"
+                    "{{http.request.host}}"
 {% endif %}
                 ]
             }
@@ -158,7 +158,7 @@ data:
 {% if s.backend.host_header|length %}
                                 "{{s.backend.host_header}}"
 {% else %}
-                                "{host}"
+                                "{{http.request.host}}"
 {% endif %}
                             ]
                         }
