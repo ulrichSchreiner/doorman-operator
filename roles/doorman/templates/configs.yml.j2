@@ -32,7 +32,7 @@
 {% if s.backend.host_header|length %}
                     "{{s.backend.host_header}}"
 {% else %}
-                    "{http.request.host}"
+                    "{{s.host}}"
 {% endif %}
                 ]
             }
