@@ -169,8 +169,8 @@ data:
                     }
                 }
 {% if s.health_check is defined %}
-,
-{{ healthcheck(s) }}
+                ,
+                {{ healthcheck(s) }}
 {% endif %}
 
             }
