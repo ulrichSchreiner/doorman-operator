@@ -136,7 +136,7 @@ data:
                     "protocol": "http"
 {% if s.backend.use_tls %}
                     ,"tls": {
-                        "server_name": "{{s.host}}",
+                        "server_name": "{http.request.host}",
                         "insecure_skip_verify":{{s.backend.insecure_skip|default(false) | to_json }}
                     }
 {% endif %}
