@@ -1,0 +1,70 @@
+---
+kind: PersistentVolumeClaim
+apiVersion: v1
+metadata:
+  name: keydb-vol-claim
+  namespace: '{{ ansible_operator_meta.namespace }}'
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: {{ keydb_volume_size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: '{{ ansible_operator_meta.name }}-keydb-master'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    labels:
+        app: keydb
+spec:
+  selector:
+    matchLabels:
+      app: keydb
+      role: master
+      tier: backend
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: keydb
+        role: master
+        tier: backend
+    spec:
+      containers:
+      - name: master
+        image: eqalpha/keydb:x86_64_v6.0.16
+        securityContext:
+          runAsUser: 999
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+        ports:
+        - containerPort: 6379
+        volumeMounts:
+        - mountPath: /data
+          name: keydb-data
+      volumes:
+      - name: keydb-data
+        persistentVolumeClaim:
+          claimName: keydb-vol-claim
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: '{{ ansible_operator_meta.name }}-keydb-master'
+    namespace: '{{ ansible_operator_meta.namespace }}'
+    labels:
+        app: keydb
+        role: master
+        tier: backend
+spec:
+  ports:
+  - port: 6379
+    targetPort: 6379
+  selector:
+    app: keydb
+    role: master
+    tier: backend

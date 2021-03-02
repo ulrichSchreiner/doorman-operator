@@ -7,7 +7,7 @@ ingress_class: nginx
 
 log_level: info
 app_version_tag: latest
-pull_policy: IfNotPreset
+pull_policy: IfNotPresent
 port: 2015
 replicas: 2
 messenger_burst: 20
@@ -23,3 +23,6 @@ access_duration: 10h
 cookie_block: S+lyDRL0/sFKNmTtiD2/T4W8J5x3ur2zQY6jK4J08PM=
 cookie_hash: tga7Y9FC/4R8lm6abiPZCbqOYS4Pz4H4ql6AoIx6yMMmLSZhrS4ZihiLKlTl5Bcjx8fBkuWE4FDkvdISeVEjNQ==
 insecure_cookie: false
+keydb_volume_size: 10Gi
+existing_keydb:
+  enabled: false

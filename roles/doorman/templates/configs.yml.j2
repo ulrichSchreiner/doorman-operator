@@ -91,7 +91,12 @@ data:
                     "persistent_type": "redis",
                     "memory_cache_mb": 300,
                     "redis": {
-                        "address": "{{ ansible_operator_meta.name }}-redis-master:6379"
+{% if existing_keydb.enabled %}
+                        "address": "{{ existing_keydb.address }}",
+                        "password": "{{ existing_keydb.password }}"
+{% else %}
+                        "address": "{{ ansible_operator_meta.name }}-keydb-master:6379"
+{% endif %}
                     },
                     "otp": {
                         "timeout": "{{ otp_timeout }}",
@@ -134,7 +139,6 @@ data:
                     "protocol": "http"
 {% if s.backend.use_tls %}
                     ,"tls": {
-                        "server_name": "{http.request.host}",
                         "insecure_skip_verify":{{s.backend.insecure_skip|default(false) | to_json }}
                     }
 {% endif %}

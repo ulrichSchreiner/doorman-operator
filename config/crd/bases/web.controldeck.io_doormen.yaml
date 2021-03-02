@@ -116,6 +116,24 @@ spec:
                 type: boolean
                 default: false
                 description: allow insecure cookies; use only in development mode
+              existing_keydb:
+                type: object
+                description: indication if the controller should create a keydb or use an
+                  existing one
+                properties:
+                  enabled:
+                    type: boolean
+                    default: false
+                    description: if false, the controller will create a new keydb
+                      installation
+                  address:
+                    type: string
+                    default: ""
+                    description:  the host:port/ip:port of the keydb to use
+                  password:
+                    type: string
+                    default: ""
+                    description: the password to connect to the keydb
               services:
                 description: a list of backend services
                 type: array

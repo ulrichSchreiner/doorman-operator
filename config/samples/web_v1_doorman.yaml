@@ -13,6 +13,10 @@ spec:
   cookie_block: S+lyDRL0/sFKNmTtiD2/T4W8J5x3ur2zQY6jK4J08PM=
   cookie_hash: tga7Y9FC/4R8lm6abiPZCbqOYS4Pz4H4ql6AoIx6yMMmLSZhrS4ZihiLKlTl5Bcjx8fBkuWE4FDkvdISeVEjNQ==
   insecure_cookie: true
+  existing_keydb:
+    enabled: true
+    address: haproxy-keydb-service.default.svc.cluster.local:6380
+    password: pass123
   transports:
     -
       type: email
@@ -46,9 +50,9 @@ spec:
       type: list
       name: static list
       spec:
-        - "127.0.0.2"
-        - "::2"
-        - "192.168.49.0/24"
+        - "127.0.0.1"
+        - "::1"
+        - "192.168.99.0/24"
   users:
     -
       type: list
@@ -57,7 +61,7 @@ spec:
         -
           name: Max Muster
           uid: mmu
-          mobile: 004912345123
+          mobile: "004912345123"
           email: max.muster@example.com
     -
       type: ldap
@@ -75,7 +79,6 @@ spec:
       backend:
         upstreams:
           - www.example.com:443
-        host_header: www.example.com
         use_tls: true
         insecure_skip: true
       health_check:
@@ -85,12 +88,12 @@ spec:
         expect_status: 200
         expect_body: "example"
     -
-      host: www.innuendo.de
+      host: innuendo.local
       backend:
         upstreams:
           - www.innuendo.de:443
-        host_header: www.innuendo.de
         use_tls: true
+        host_header: www.innuendo.de
       health_check:
         path: "/welcome/"
         interval: 30s
