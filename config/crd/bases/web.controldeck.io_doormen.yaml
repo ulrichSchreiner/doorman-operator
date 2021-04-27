@@ -78,6 +78,13 @@ spec:
                   - token
                   - otp
                   - link
+              captcha_mode:
+                type: string
+                default: ""
+                description: the mode of captcha
+                enum:
+                  - math
+                  - full
               issuer:
                 type: string
                 description: the name of the issuer of the tokens

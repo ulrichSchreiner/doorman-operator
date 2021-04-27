@@ -64,6 +64,9 @@ data:
                 "privacy_policy_url": "{{ privacy_policy_url }}",
                 "spacing": "{{ spacing }}",
                 "operation_mode": "{{ operation_mode }}",
+{% if captcha_mode|length %}
+                "captcha_mode": "{{ captcha_mode }}",
+{% endif %}
                 "issuer": "{{ issuer }}",
                 "issuer_base": "https://{{ issuer_host }}",
                 "token_duration": "{{ token_duration }}",
