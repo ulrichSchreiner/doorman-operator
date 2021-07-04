@@ -133,9 +133,11 @@ data:
             "host":["{{s.host}}"]
         }],
         "handle": [
+{% if s.protected %}
             {
                 "handler":"doorman"
             },
+{% endif %}
             {
                 "handler": "reverse_proxy",
                 "transport": {

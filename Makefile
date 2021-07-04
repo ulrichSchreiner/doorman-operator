@@ -20,7 +20,7 @@ all: docker-build
 
 # Run against the configured Kubernetes cluster in ~/.kube/config
 run: ansible-operator
-	$(ANSIBLE_OPERATOR) run
+	$(ANSIBLE_OPERATOR) run --zap-devel --ansible-verbosity 6
 
 # Install CRDs into a cluster
 install: kustomize
@@ -100,7 +100,7 @@ delete-controller:
 
 .PHONY:
 deployment-builder:
-	docker build -t quay.io/ulrichschreiner/ansible-shell -f Dockerfile.dev .
+	docker build --no-cache -t quay.io/ulrichschreiner/ansible-shell -f Dockerfile.dev .
 
 # https://github.com/metal-stack/metal-dockerfiles
 .PHONY:

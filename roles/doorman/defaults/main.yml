@@ -6,9 +6,12 @@ appimage: quay.io/ulrichschreiner/doorman
 ingress_class: nginx
 
 log_level: info
+service:
+  type: ingress
 app_version_tag: latest
 pull_policy: IfNotPresent
 port: 2015
+tls_port: 0
 replicas: 2
 messenger_burst: 20
 messenger_rate: 3s

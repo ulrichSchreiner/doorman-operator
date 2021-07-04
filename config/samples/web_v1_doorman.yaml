@@ -3,6 +3,11 @@ kind: Doorman
 metadata:
   name: doorman-sample
 spec:
+  service:
+    type: nodeport
+    spec:
+      port: 30080
+      tls_port: 30443
   log_level: debug
   issuer: Doorman
   issuer_host: auth.example.com
@@ -97,6 +102,6 @@ spec:
       health_check:
         path: "/welcome/"
         interval: 30s
-        timeout: 5s
+        timeout: 4s
         expect_status: 200
         expect_body: "Willkommen"

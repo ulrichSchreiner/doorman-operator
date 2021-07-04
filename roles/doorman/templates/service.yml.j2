@@ -7,11 +7,34 @@ metadata:
   labels:
     app: '{{ applabel }}'
 spec:
+  selector:
+    app: '{{ applabel }}'
+{% if service.type == 'ingress' %}
   type: ClusterIP
   ports:
   - port: 8000
     targetPort: {{ port }}
     protocol: TCP
     name: http
-  selector:
-    app: '{{ applabel }}'
+{% endif %}
+
+{% if service.type == 'nodeport' %}
+  type: NodePort
+  ports:
+{% if service.spec.port is defined %}
+  - port: {{ port }}
+    nodePort: {{service.spec.port}}
+    targetPort: {{ port }}
+    protocol: TCP
+{% endif %}
+
+{% if service.spec.tls_port is defined %}
+{% if tls_port != 0 %}
+  - port: {{ tls_port }}
+    nodePort: {{service.spec.tls_port}}
+    targetPort: {{ tls_port }}
+    protocol: TCP
+{% endif %}
+{% endif %}
+
+{% endif %}

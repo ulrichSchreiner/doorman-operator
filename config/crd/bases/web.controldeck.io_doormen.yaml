@@ -37,6 +37,24 @@ spec:
             type: object
             x-kubernetes-preserve-unknown-fields: true
             properties:
+              service:
+                type: object
+                description: customizes how doorman will be made available
+                properties:
+                  type:
+                    type: string
+                    description: the type of service
+                    default: ingress
+                  spec:
+                    type: object
+                    description: define port numbers for public interface
+                    properties:
+                      port:
+                        type: integer
+                        default: 80
+                      tls_port:
+                        type: integer
+                        default: 443
               replicas:
                 type: integer
                 default: 2
@@ -45,6 +63,10 @@ spec:
                 type: integer
                 default: 2015
                 description: the listen port for the service
+              tls_port:
+                type: integer
+                default: 0
+                description: the tls listen port for the tls service if not 0
               log_level:
                 type: string
                 default: info
@@ -148,6 +170,11 @@ spec:
                 items:
                   type: object
                   properties:
+                    protected:
+                      description: if true, host will be protected by doorman, otherwise
+                        it will be public
+                      type: boolean
+                      default: true
                     host:
                       description: the dns name of the service
                       type: string

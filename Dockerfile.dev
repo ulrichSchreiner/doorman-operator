@@ -1,33 +1,52 @@
-FROM metalstack/metal-deployment-base:latest
+FROM registry.gitlab.com/ulrichschreiner/base/ubuntu:21.04
 
-RUN apt update && apt -y install \
-    bash-completion \
-    build-essential \
-    git \
-    jq \
-    kubectl \
-    kubetail \
-    less \
-    python3-dev \
-    vim \
-    watch \
-    wget
+ENV VERSION_ANSIBLE=4.1.0 \
+    VERSION_KUBECTL=1.21.0 \
+    VERSION_HELM=3.6.1
 
-
-RUN pip3 install ansible-runner ansible-runner-http && \
-    mkdir -p ~/repos/ && \
-    git clone https://github.com/jonmosco/kube-ps1.git $HOME/repos/kube-ps1  && \
-    git clone https://github.com/heptiolabs/ktx $HOME/repos/ktx && \
-    # install k9s
-    curl -sL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r ".assets[] | select(.name | contains(\"Linux_x86_64\")) | .browser_download_url" | wget -i - -O - | tar  -C /usr/local/bin -xz && \
-    curl -sL https://api.github.com/repos/operator-framework/operator-sdk/releases/latest | jq -r ".assets[] | select(.name | contains(\"ansible-operator_linux_amd64\")) | .browser_download_url" | wget -i - -O /usr/local/bin/ansible-operator && chmod +x /usr/local/bin/ansible-operator && \
-    echo "source /etc/bash_completion" >>~/.bashrc && \
-    echo "source $HOME/repos/kube-ps1/kube-ps1.sh" >>~/.bashrc && \
-    echo "source $HOME/repos/ktx/ktx" >>~/.bashrc && \
-    echo "source $HOME/repos/ktx/ktx-completion.sh" >>~/.bashrc && \
-    echo "PS1='[\u@\h \W \$(kube_ps1)] # '" >>~/.bashrc && \
-    echo "alias k=kubectl" >>~/.bashrc && \
-    echo "alias watch='watch '" >>~/.bashrc
+RUN set -x \
+ && apt-get update \
+ && DEBIAN_FRONTEND="noninteractive" TZ="Etc/UTC" apt-get install --yes --no-install-recommends \
+        apt-transport-https \
+        bash-completion \
+        build-essential \
+        ca-certificates \
+        curl \
+        gnupg2 \
+        software-properties-common \
+        git \
+        jq \
+        kubetail \
+        less \
+        openssh-client \
+        python3 \
+        python3-dev \
+        python3-pip \
+        python3-setuptools \
+        python3-wheel \
+        rsync \
+        vim \
+        watch \
+        wget \
+        yamllint \
+ && curl -sSL https://storage.googleapis.com/kubernetes-release/release/v${VERSION_KUBECTL}/bin/linux/amd64/kubectl > /usr/bin/kubectl \
+ && curl -sSL https://get.helm.sh/helm-v${VERSION_HELM}-linux-amd64.tar.gz | tar --strip-components 1 -xzC /usr/bin linux-amd64/helm \
+ && chmod +x /usr/bin/helm /usr/bin/kubectl \
+ && pip3 install ansible==${VERSION_ANSIBLE} ansible-runner ansible-runner-http kubernetes openshift \
+ && mkdir -p ~/repos/ \
+ && git clone https://github.com/jonmosco/kube-ps1.git $HOME/repos/kube-ps1  \
+ && git clone https://github.com/heptiolabs/ktx $HOME/repos/ktx \
+ # install k9s
+ && curl -sL https://api.github.com/repos/derailed/k9s/releases/latest | jq -r ".assets[] | select(.name | contains(\"Linux_x86_64\")) | .browser_download_url" | wget -i - -O - | tar  -C /usr/local/bin -xz  \
+ && curl -sL https://api.github.com/repos/operator-framework/operator-sdk/releases/latest | jq -r ".assets[] | select(.name | contains(\"ansible-operator_linux_amd64\")) | .browser_download_url" | wget -i - -O /usr/local/bin/ansible-operator && chmod +x /usr/local/bin/ansible-operator  \
+ && echo "source /etc/bash_completion" >>~/.bashrc  \
+ && echo "source $HOME/repos/kube-ps1/kube-ps1.sh" >>~/.bashrc  \
+ && echo "source $HOME/repos/ktx/ktx" >>~/.bashrc  \
+ && echo "source $HOME/repos/ktx/ktx-completion.sh" >>~/.bashrc  \
+ && echo "PS1='[\u@\h \W \$(kube_ps1)] # '" >>~/.bashrc  \
+ && echo "alias k=kubectl" >>~/.bashrc  \
+ && echo "alias watch='watch '" >>~/.bashrc \
+ && rm -rf /var/cache/apt/* /tmp/*
 
 ENV CDPATH=/work
 

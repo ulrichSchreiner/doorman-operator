@@ -2,7 +2,7 @@
 # tasks file for Doorman
 
 - name: Get Cluster information
-  community.kubernetes.k8s_cluster_info:
+  kubernetes.core.k8s_cluster_info:
   register: api_status
 
 - name: set minor k8s version
@@ -10,7 +10,7 @@
     k8s_minor: "{{ api_status.version.server.kubernetes.minor | int }}"
 
 - name: create keydb
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'keydb.yml.j2') }}"
     wait: yes
@@ -18,14 +18,14 @@
      - not existing_keydb.enabled
 
 - name: create smtp secrets for transports
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'smtp-secret.yml.j2') }}"
   when: item.type == 'email' and not item.spec_from_secret is defined
   loop: "{{ transports }}"
 
 - name: create ldap secrets for users
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'ldap-secret.yml.j2') }}"
   when: item.type == 'ldap' and not item.spec_from_secret is defined
@@ -36,28 +36,32 @@
     config_data: "{{ lookup('template', 'configs.yml.j2') }}"
 
 - name: create doorman config
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ config_data }}"
 
 - name: create doorman service
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'service.yml.j2') }}"
 
 - name: create doorman ingress
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'ingress.yml.j2') }}"
-  when: k8s_minor|int > 18
+  when:
+    - service.type == "ingress"
+    - k8s_minor|int > 18
 
 - name: create doorman ingress (old)
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'ingress-old.yml.j2') }}"
-  when: k8s_minor|int < 19
+  when:
+    - service.type == "ingress"
+    - k8s_minor|int < 19
 
 - name: create doorman deployment
-  community.kubernetes.k8s:
+  kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'deployment.yml.j2') }}"
