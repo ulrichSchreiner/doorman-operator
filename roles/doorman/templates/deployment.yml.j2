@@ -18,6 +18,17 @@ spec:
       labels:
         app: '{{ applabel }}'
     spec:
+      hostAliases:
+{% for s in services %}
+{% for b in s.backend.upstreams %}
+{% set hp = b.split(':') %}
+{% if hp[0] | ipaddr %}
+      - ip: {{ hp[0] }}
+        hostnames:
+          - {{s.host}}.{{loop.index}}
+{% endif %}
+{% endfor %}
+{% endfor %}
       containers:
       - name: doorman
         imagePullPolicy: {{ pull_policy }}

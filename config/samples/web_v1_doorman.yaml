@@ -93,15 +93,16 @@ spec:
         expect_status: 200
         expect_body: "example"
     -
-      host: innuendo.local
+      host: httpbin.local
       backend:
         upstreams:
-          - www.innuendo.de:443
+          - 3.89.166.41:443
         use_tls: true
-        host_header: www.innuendo.de
+        insecure_skip: true
+        host_header: httpbin.org
       health_check:
-        path: "/welcome/"
+        path: "/json"
         interval: 30s
         timeout: 4s
         expect_status: 200
-        expect_body: "Willkommen"
+        expect_body: "slideshow"

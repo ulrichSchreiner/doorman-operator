@@ -17,7 +17,7 @@
 {% macro healthcheck(s) -%}
     "health_checks": {
         "active": {
-            "path": "{{s.health_check.path}}",
+            "uri": "{{s.health_check.path}}",
 {% if s.health_check.expect_status is defined %}
             "expect_status": {{s.health_check.expect_status}},
 {% endif %}
@@ -56,7 +56,8 @@ data:
            }
        },
        "admin": {
-           "disabled": true
+           "disabled": false,
+           "listen": "127.0.0.1:2019"
        },
        "apps": {
            "doorman": {
@@ -150,8 +151,13 @@ data:
                 },
                 "upstreams": [
 {% for d in s.backend.upstreams %}
+{% set hp = d.split(':') %}
                     {
+{% if hp[0] | ipaddr %}
+                        "dial":"{{s.host}}.{{loop.index}}:{{hp[1]}}"
+{% else %}
                         "dial": "{{d}}"
+{% endif %}
                     }
 {% if not loop.last %}
     ,
