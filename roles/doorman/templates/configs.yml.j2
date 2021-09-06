@@ -154,7 +154,7 @@ data:
 {% set hp = d.split(':') %}
                     {
 {% if hp[0] | ipaddr %}
-                        "dial":"{{s.host}}.{{loop.index}}:{{hp[1]}}"
+                        "dial":"{{s.host|replace('*','wildcard')}}.{{loop.index}}:{{hp[1]}}"
 {% else %}
                         "dial": "{{d}}"
 {% endif %}

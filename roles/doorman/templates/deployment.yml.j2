@@ -25,7 +25,7 @@ spec:
 {% if hp[0] | ipaddr %}
       - ip: {{ hp[0] }}
         hostnames:
-          - {{s.host}}.{{loop.index}}
+          - {{s.host|replace('*','wildcard')}}.{{loop.index}}
 {% endif %}
 {% endfor %}
 {% endfor %}
