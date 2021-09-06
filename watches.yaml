@@ -4,4 +4,6 @@
   group: web.controldeck.io
   kind: Doorman
   role: doorman
+  watchDependentResources: false
+  reconcilePeriod: 60s
 # +kubebuilder:scaffold:watch

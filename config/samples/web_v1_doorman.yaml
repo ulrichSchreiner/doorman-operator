@@ -83,7 +83,7 @@ spec:
       host: www.example.com
       backend:
         upstreams:
-          - www.example.com:443
+          - 93.184.216.34:443
         use_tls: true
         insecure_skip: true
       health_check:
@@ -97,12 +97,13 @@ spec:
       backend:
         upstreams:
           - 3.89.166.41:443
+          - 3.209.207.48:443
         use_tls: true
         insecure_skip: true
         host_header: httpbin.org
       health_check:
         path: "/json"
-        interval: 30s
+        interval: 31s
         timeout: 4s
         expect_status: 200
         expect_body: "slideshow"

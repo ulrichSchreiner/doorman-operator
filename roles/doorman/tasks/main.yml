@@ -65,3 +65,4 @@
   kubernetes.core.k8s:
     state: present
     definition: "{{ lookup('template', 'deployment.yml.j2') }}"
+    force: yes
