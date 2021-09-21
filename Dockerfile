@@ -5,7 +5,7 @@ USER root
 RUN pip3 uninstall -y ansible
 RUN pip3 install ansible==${VERSION_ANSIBLE} && \
     pip3 install "ansible-runner>=1.1.0,<2.0" ansible-runner-http kubernetes openshift netaddr dnspython
-USER ansible
+USER ${USER_UID}
 
 COPY requirements.yml ${HOME}/requirements.yml
 RUN ansible-galaxy collection install -r ${HOME}/requirements.yml && \
