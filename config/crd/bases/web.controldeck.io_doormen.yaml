@@ -205,6 +205,16 @@ spec:
                           description: set to true, if the certificate of the backend not be checked for validity
                           type: boolean
                           default: false
+                        selection_policy:
+                          description: the selection policy for the backends, "cookie" if empty
+                          type: object
+                          additionalProperties: true
+                          properties:
+                            policy:
+                              type: string
+                              description: the type of selection
+                          required:
+                            - policy
                       required:
                         - upstreams
                     health_check:

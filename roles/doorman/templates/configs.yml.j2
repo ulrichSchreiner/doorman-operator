@@ -178,10 +178,14 @@ data:
                     }
                 },
                 "load_balancing": {
+{% if s.backend.selection_policy is defined %}
+                    "selection_policy": {{s.backend.selection_policy|to_json}}
+{% else %}
                     "selection_policy": {
                         "policy":"cookie",
                         "name":"backid"
                     }
+{% endif %}
                 }
 {% if s.health_check is defined %}
                 ,

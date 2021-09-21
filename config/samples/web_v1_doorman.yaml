@@ -82,6 +82,8 @@ spec:
     -
       host: www.example.com
       backend:
+        selection_policy:
+          policy: first
         upstreams:
           - 93.184.216.34:443
         use_tls: true
@@ -95,6 +97,9 @@ spec:
     -
       host: httpbin.local
       backend:
+        selection_policy:
+          policy: cookie
+          name: srvid
         upstreams:
           - 3.89.166.41:443
           - 3.209.207.48:443
