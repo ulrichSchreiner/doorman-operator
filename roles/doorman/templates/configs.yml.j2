@@ -167,6 +167,11 @@ data:
                 "headers": {
                     "request": {
                         "add": {
+{% if s.backend.add_headers|length %}
+{% for k,v in s.backend.add_headers.items() %}
+                            "{{k}}":["{{v}}"],
+{% endfor %}
+{% endif %}
                             "Host": [
 {% if s.backend.host_header|length %}
                                 "{{s.backend.host_header}}"

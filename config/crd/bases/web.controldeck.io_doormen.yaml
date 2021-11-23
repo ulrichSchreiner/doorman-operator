@@ -187,6 +187,10 @@ spec:
                       description: the backend for the service
                       type: object
                       properties:
+                        add_headers:
+                          description: headers for the backend
+                          type: object
+                          additionalProperties: true
                         upstreams:
                           description: a list of ip:port or host:port entries
                           type: array
