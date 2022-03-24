@@ -5,6 +5,7 @@ metadata:
   name: keydb-vol-claim
   namespace: '{{ ansible_operator_meta.namespace }}'
 spec:
+  storageClassName: {{ keydb.storageclass}}
   accessModes:
     - ReadWriteOnce
   resources:
@@ -32,11 +33,13 @@ spec:
         role: master
         tier: backend
     spec:
+      securityContext:
+        fsGroup: {{ keydb.runas }}
       containers:
       - name: master
-        image: eqalpha/keydb:x86_64_v6.0.16
+        image: {{ keydb.image }}
         securityContext:
-          runAsUser: 999
+          runAsUser: {{ keydb.runas }}
         resources:
           requests:
             cpu: 100m

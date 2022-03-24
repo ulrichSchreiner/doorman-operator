@@ -1,7 +1,7 @@
 FROM registry.gitlab.com/ulrichschreiner/base/ubuntu:21.10
 
 
-ENV VERSION_ANSIBLE=4.8.0 \
+ENV VERSION_ANSIBLE=4.9.0 \
     VERSION_KUBECTL=1.22.0 \
     VERSION_HELM=3.6.1
 

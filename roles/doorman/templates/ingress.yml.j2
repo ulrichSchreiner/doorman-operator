@@ -13,7 +13,7 @@ metadata:
 spec:
   ingressClassName: {{ ingress_class }}
   rules:
-  - host: {{ issuer_host }}
+  - host: "{{ issuer_host }}"
     http:
       paths:
       - path: /
@@ -24,7 +24,7 @@ spec:
             port:
               number: 8000
 {% for h in services %}
-  - host: {{ h.host }}
+  - host: "{{ h.host }}"
     http:
       paths:
       - path: /
@@ -38,13 +38,13 @@ spec:
   tls:
 {% if issuer_secret is defined %}
   - hosts:
-    - {{ issuer_host }}
+    - "{{ issuer_host }}"
     secretName: {{ issuer_secret }}
 {% endif %}
 {% for h in services %}
 {% if h.tls_secret is defined %}
   - hosts:
-    - {{ h.host }}
+    - "{{ h.host }}"
     secretName: {{ h.tls_secret }}
 {% endif %}
 {% endfor %}

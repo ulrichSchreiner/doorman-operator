@@ -37,6 +37,42 @@ spec:
             type: object
             x-kubernetes-preserve-unknown-fields: true
             properties:
+              certificates:
+                type: array
+                description: an array of certficates which will be created as secrets
+                default: []
+                items:
+                  type: object
+                  properties:
+                    issuer:
+                      type: string
+                      description: the issuer used, when cert-manager is required
+                      default: letsencrypt-prod
+                    issuer_kind:
+                      type: string
+                      description: the issuer-kind used, when cert-manager is required
+                      default: ClusterIssuer
+                    host:
+                      type: string
+                      description: the name of the host, onyl required if certmanager is used
+                    secret:
+                      type: string
+                      description: the name of the secret
+                    labels:
+                      type: array
+                      description: optional metadata labels for a certificate
+                      items:
+                        type: object
+                        x-kubernetes-preserve-unknown-fields: true
+                    cert:
+                      type: object
+                      description: optional data for a uploaded  certificate. if empty,
+                        cert-manager will be used
+                      properties:
+                        cert:
+                          type: string
+                        key:
+                          type: string
               service:
                 type: object
                 description: customizes how doorman will be made available
@@ -146,6 +182,22 @@ spec:
                 type: boolean
                 default: false
                 description: allow insecure cookies; use only in development mode
+              keydb:
+                type: object
+                description: settings for the KV database
+                properties:
+                  storageclass:
+                    type: string
+                    description: the storage class to use for the KV database
+                    default: ""
+                  image:
+                    type: string
+                    description: the image to use
+                    default: eqalpha/keydb:x86_64_v6.2.2
+                  runas:
+                    type: integer
+                    description: the numerical userid
+                    default: 999
               existing_keydb:
                 type: object
                 description: indication if the controller should create a keydb or use an

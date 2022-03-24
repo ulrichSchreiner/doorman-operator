@@ -1,0 +1,41 @@
+{% for s in certificates %}
+{% if "cert" in s %}
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: {{s.secret}}
+{% if s.labels is defined and s.labels | length > 0 %}
+  labels:
+{% for k,v in s.labels.items() %}
+    "{{k}}": "{{v}}"
+{% endfor %}
+{% endif %}
+data:
+  tls.crt: {{s.cert.cert | b64encode}}
+  tls.key: {{s.cert.key | b64encode}}
+type: kubernetes.io/tls
+{% else %}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  namespace: '{{ ansible_operator_meta.namespace }}'
+  name: {{ s.host | replace('*','star') }}
+{% if s.labels is defined and s.labels | length > 0 %}
+  labels:
+{% for k,v in s.labels.items() %}
+    "{{k}}": "{{v}}"
+{% endfor %}
+{% endif %}
+spec:
+  secretName: {{ s.secret }}
+  commonName: "{{ s.host }}"
+  dnsNames:
+  - "{{ s.host }}"
+  issuerRef:
+    name: {{s.issuer}}
+    kind: {{s.issuer_kind}}
+{% endif %}
+{% endfor %}

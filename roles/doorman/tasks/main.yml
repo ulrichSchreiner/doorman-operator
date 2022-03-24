@@ -31,6 +31,12 @@
   when: item.type == 'ldap' and not item.spec_from_secret is defined
   loop: "{{ users }}"
 
+- name: create doorman certificates
+  k8s:
+    state: present
+    definition: "{{ lookup('template', 'certificates.yaml.j2') }}"
+  when: certificates is defined
+
 - name: generate config template
   set_fact:
     config_data: "{{ lookup('template', 'configs.yml.j2') }}"
