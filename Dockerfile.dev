@@ -13,6 +13,8 @@ RUN set -x \
         build-essential \
         ca-certificates \
         curl \
+        default-jdk-headless \
+        direnv \
         gnupg2 \
         software-properties-common \
         git \
