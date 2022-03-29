@@ -5,4 +5,4 @@ kind: Kustomization
 images:
 - name: controller
   newName: quay.io/ulrichschreiner/doorman-controller
-  newTag: latest
+  newTag: ge47f9a2e
