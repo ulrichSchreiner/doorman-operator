@@ -1,9 +1,10 @@
-FROM registry.gitlab.com/ulrichschreiner/base/ubuntu:21.10
+FROM registry.gitlab.com/ulrichschreiner/base/ubuntu:22.04
 
 
 ENV VERSION_ANSIBLE=4.9.0 \
     VERSION_KUBECTL=1.22.0 \
-    VERSION_HELM=3.6.1
+    VERSION_HELM=3.9.0 \
+    KUBIE_VERSION=0.17.0
 
 RUN set -x \
  && apt-get update \
@@ -35,8 +36,9 @@ RUN set -x \
         wget \
         yamllint \
  && curl -sSL https://storage.googleapis.com/kubernetes-release/release/v${VERSION_KUBECTL}/bin/linux/amd64/kubectl > /usr/bin/kubectl \
+ && curl -sSL https://github.com/sbstp/kubie/releases/download/v${KUBIE_VERSION}/kubie-linux-amd64 > /usr/bin/kubie \
  && curl -sSL https://get.helm.sh/helm-v${VERSION_HELM}-linux-amd64.tar.gz | tar --strip-components 1 -xzC /usr/bin linux-amd64/helm \
- && chmod +x /usr/bin/helm /usr/bin/kubectl \
+ && chmod +x /usr/bin/helm /usr/bin/kubectl /usr/bin/kubie \
  && pip3 install ansible==${VERSION_ANSIBLE} "ansible-runner>=2.0.2" ansible-runner-http kubernetes openshift \
  && mkdir -p ~/repos/ \
  && git clone https://github.com/jonmosco/kube-ps1.git $HOME/repos/kube-ps1  \
